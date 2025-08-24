@@ -1,14 +1,27 @@
+# from rest_framework import serializers
+# from .models import Group
+
+# class GroupSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Group
+#         fields = "__all__"  # Include all fields from the Group model
+
+# class AddStudentToGroupSerializer(serializers.Serializer):
+#     student_ids = serializers.ListField(
+#         child=serializers.IntegerField(), 
+#         allow_empty=False,
+#         help_text="قائمة بالـ IDs للطلاب"
+#     )
+
+
 from rest_framework import serializers
 from .models import Group
 
 class GroupSerializer(serializers.ModelSerializer):
+    available_slots = serializers.IntegerField(read_only=True)
     class Meta:
         model = Group
-        fields = "__all__"  # Include all fields from the Group model
+        fields = "__all__"
 
 class AddStudentToGroupSerializer(serializers.Serializer):
-    student_ids = serializers.ListField(
-        child=serializers.IntegerField(), 
-        allow_empty=False,
-        help_text="قائمة بالـ IDs للطلاب"
-    )
+    student_ids = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
