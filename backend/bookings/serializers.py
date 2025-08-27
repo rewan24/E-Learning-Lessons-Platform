@@ -4,8 +4,15 @@ from .models import Booking
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = '__all__'
+        fields = [
+            "id",
+            "student",
+            "group",
+            "created_at",
+        ]
+        read_only_fields = ["id", "student", "created_at"]
 
-class CreateBookingSerializer(serializers.Serializer):
-    student_id = serializers.IntegerField()
-    group_id = serializers.IntegerField()
+    def create(self, validated_data):
+        request = self.context.get("request")
+        validated_data["student"] = request.user.student  
+        return super().create(validated_data)

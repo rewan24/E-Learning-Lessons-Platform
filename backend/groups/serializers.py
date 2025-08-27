@@ -1,27 +1,28 @@
-# from rest_framework import serializers
-# from .models import Group
-
-# class GroupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Group
-#         fields = "__all__"  # Include all fields from the Group model
-
-# class AddStudentToGroupSerializer(serializers.Serializer):
-#     student_ids = serializers.ListField(
-#         child=serializers.IntegerField(), 
-#         allow_empty=False,
-#         help_text="قائمة بالـ IDs للطلاب"
-#     )
-
-
 from rest_framework import serializers
 from .models import Group
+from students.models import Student
+
+
+class StudentMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["full_name", "phone"]  # هتظهر اسم الطالب ورقم الموبايل
 
 class GroupSerializer(serializers.ModelSerializer):
-    available_slots = serializers.IntegerField(read_only=True)
+    seats_left = serializers.SerializerMethodField()
+    is_full = serializers.SerializerMethodField()
+    students = StudentMiniSerializer(many=True, read_only=True)
+
     class Meta:
         model = Group
-        fields = "__all__"
+        fields = [
+            "id", "name", "stage", "capacity", "schedule", "days",
+            "students", "seats_left", "is_full", "created_at", "updated_at"
+        ]
+        read_only_fields = ["seats_left", "is_full", "created_at", "updated_at"]
 
-class AddStudentToGroupSerializer(serializers.Serializer):
-    student_ids = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
+    def get_seats_left(self, obj):
+        return obj.seats_left  
+
+    def get_is_full(self, obj):
+        return obj.is_full  

@@ -1,14 +1,4 @@
-# from django.db import models
-
-# class User(models.Model):
-#     username = models.CharField(max_length=100, unique=True) 
-#     email = models.EmailField(unique=True)  
-#     phone = models.CharField(max_length=20, blank=True, null=True)  
-#     password = models.CharField(max_length=128)  
-
-#     def __str__(self):
-#         return self.username
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.core.validators import RegexValidator
 
@@ -17,7 +7,21 @@ class User(AbstractUser):
         regex=r'^01[0-2,5][0-9]{8}$',
         message="رقم الهاتف المصري غير صالح. مثال: 01012345678"
     )
-    phone = models.CharField(max_length=11, validators=[phone_regex], blank=True, null=True)
-    
+    phone = models.CharField(max_length=11, validators=[phone_regex], blank=True, null=True, unique=True)
+
+    # منع clashes مع auth.User
+    groups = models.ManyToManyField(
+        Group,
+        related_name="custom_user_groups",
+        blank=True,
+        help_text="المجموعات التي ينتمي لها المستخدم"
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,     
+        related_name="custom_user_permissions",
+        blank=True,
+        help_text="صلاحيات المستخدم الخاصة"
+    )
+
     def __str__(self):
         return self.username

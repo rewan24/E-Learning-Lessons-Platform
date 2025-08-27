@@ -1,20 +1,14 @@
-# from django.urls import path
-# from .views import create_user, list_users, user_detail
-
-# app_name = "users"
-
-# urlpatterns = [
-#     path("", list_users, name="user-list"),  
-#     path("create/", create_user, name="user-create"),  
-#     path("<int:pk>/", user_detail, name="user-detail"),  
-# ]
-
 from django.urls import path
-from .views import register_user, list_users
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import register_user, list_users, user_detail, me
 
 app_name = "users"
 
 urlpatterns = [
     path("register/", register_user, name="register"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("me/", me, name="me"),
     path("", list_users, name="list-users"),
+    path("<int:pk>/", user_detail, name="user-detail"),
 ]
