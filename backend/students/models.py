@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 from django.db.models.functions import Lower
 
@@ -8,13 +9,19 @@ STAGE_CHOICES = (
 )
 
 class Student(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="student",
+        null=True,
+        blank=True,
+    )
     full_name = models.CharField(max_length=120)
-    email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=15, unique=True)  # صيغة مصر هنفحصها في الـ serializer
+    email = models.EmailField(max_length=255, unique=True)
+    phone = models.CharField(max_length=15, unique=True)
     birth_date = models.DateField(null=True, blank=True)
     stage = models.CharField(max_length=10, choices=STAGE_CHOICES)
     notes = models.TextField(blank=True, default="")
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
