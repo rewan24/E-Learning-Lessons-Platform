@@ -101,8 +101,9 @@ def forgot_password(request):
     reset_expires = timezone.now() + timedelta(hours=1)  # صالح لمدة ساعة
     
     # حفظ الرمز في قاعدة البيانات (يمكن استخدام Redis أو جدول منفصل)
-    user.set_unusable_password()  # تعطيل كلمة المرور مؤقتاً
-    user.save()
+    # لا نعطل كلمة المرور هنا، فقط نرسل الرابط
+    # user.set_unusable_password()  # تعطيل كلمة المرور مؤقتاً
+    # user.save()
     
     # في التطبيق الحقيقي، احفظ reset_token في جدول منفصل
     # هنا سنستخدم session أو cache مؤقت
