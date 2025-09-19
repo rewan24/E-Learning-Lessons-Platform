@@ -1,11 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import api from "../services/api";
 import "./Navbar.css";
 
 function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,11 +19,58 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleProfileClick = async () => {
+    try {
+      // Get current user data
+      const userResponse = await api.get('users/me/');
+      const userData = userResponse.data;
+      
+      // Check if user has a student record
+      const studentsResponse = await api.get('students/');
+      const studentsData = studentsResponse.data;
+      
+      // Find student record for current user
+      const userStudent = studentsData.results?.find(student => student.user === userData.id) ||
+                         studentsData.find?.(student => student.user === userData.id);
+      
+      if (userStudent) {
+        navigate(`/students/${userStudent.id}`);
+      } else {
+        // If no student record, go to student registration
+        navigate('/student-registration');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Fallback to regular profile
+      navigate('/profile');
+    }
+  };
+
   const isAuthenticated = !!localStorage.getItem("access");
+
+  const getUserInitial = () => {
+    if (user && user.username) {
+      return user.username.charAt(0).toUpperCase();
+    }
+    return "U";
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
+    setUser(null);
+    
+    // Dispatch custom event to notify App component about logout
+    window.dispatchEvent(new Event('loginStateChanged'));
+    
     window.location.href = "/";
   };
 
@@ -52,15 +102,55 @@ function Navbar() {
             <span className="nav-text">الرئيسية</span>
           </Link>
 
+          <Link
+            className={`nav-btn ${location.pathname.startsWith("/groups") ? "active" : ""}`}
+            to="/groups"
+          >
+            <span className="nav-icon"></span>
+            <span className="nav-text">المجموعات</span>
+          </Link>
+
+          <Link
+            className={`nav-btn ${location.pathname === "/student-registration" ? "active" : ""}`}
+            to="/student-registration"
+          >
+            <span className="nav-icon"></span>
+            <span className="nav-text">تسجيل طالب</span>
+          </Link>
+
           {isAuthenticated ? (
             <>
-              <Link
-                className={`nav-link ${location.pathname === "/profile" ? "active" : ""}`}
-                to="/profile"
+              <button 
+                className="nav-btn user-avatar-btn"
+                onClick={handleProfileClick}
+                style={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "45px",
+                  height: "45px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "scale(1.1)";
+                  e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "scale(1)";
+                  e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                }}
+                title="الملف الشخصي"
               >
-                <span className="nav-icon"></span>
-                <span className="nav-text">الملف الشخصي</span>
-              </Link>
+                {getUserInitial()}
+              </button>
               <button className="nav-btn logout-btn" onClick={handleLogout}>
                 <span className="nav-icon"></span>
                 <span className="nav-text">تسجيل خروج</span>
@@ -110,16 +200,56 @@ function Navbar() {
             <span className="nav-text">الرئيسية</span>
           </Link>
 
+          <Link
+            className={`mobile-nav-btn ${location.pathname.startsWith("/groups") ? "active" : ""}`}
+            to="/groups"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <span className="nav-icon"></span>
+            <span className="nav-text">المجموعات</span>
+          </Link>
+
+          <Link
+            className={`mobile-nav-btn ${location.pathname === "/student-registration" ? "active" : ""}`}
+            to="/student-registration"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <span className="nav-icon"></span>
+            <span className="nav-text">تسجيل طالب</span>
+          </Link>
+
           {isAuthenticated ? (
             <>
-              <Link
-                className={`mobile-nav-link ${location.pathname === "/profile" ? "active" : ""}`}
-                to="/profile"
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                className="mobile-nav-btn user-profile-btn"
+                onClick={() => {
+                  handleProfileClick();
+                  setIsMenuOpen(false);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px"
+                }}
               >
-                <span className="nav-icon"></span>
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    borderRadius: "50%",
+                    width: "35px",
+                    height: "35px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "16px"
+                  }}
+                >
+                  {getUserInitial()}
+                </div>
                 <span className="nav-text">الملف الشخصي</span>
-              </Link>
+              </button>
               <button
                 className="mobile-nav-btn logout-btn"
                 onClick={() => {

@@ -10,7 +10,6 @@ class Group(models.Model):
     students = models.ManyToManyField(Student, through='bookings.Booking', related_name="groups", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
 
     @property
     def seats_left(self):
@@ -22,8 +21,6 @@ class Group(models.Model):
     
     def can_join(self, student):
         """تحقق إذا كان الطالب يمكنه الانضمام للمجموعة"""
-        if not self.is_active:
-            return False, "المجموعة غير نشطة"
         if self.is_full:
             return False, "المجموعة ممتلئة"
         if self.bookings.filter(student=student).exists():

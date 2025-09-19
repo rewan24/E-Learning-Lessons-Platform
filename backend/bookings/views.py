@@ -16,16 +16,33 @@ def booking_list_create(request):
     POST: إنشاء حجز جديد
     """
     if request.method == 'GET':
-        try:
-            student = request.user.student
-            bookings = Booking.objects.filter(student=student)
-            serializer = BookingSerializer(bookings, many=True)
-            return Response(serializer.data)
-        except Student.DoesNotExist:
-            return Response(
-                {"error": "لا يوجد طالب مرتبط بحسابك"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        # Check if filtering by specific student ID
+        student_id = request.query_params.get('student')
+        
+        if student_id:
+            # Admin or public access to specific student's bookings
+            try:
+                student = Student.objects.get(id=student_id)
+                bookings = Booking.objects.filter(student=student)
+                serializer = BookingSerializer(bookings, many=True)
+                return Response(serializer.data)
+            except Student.DoesNotExist:
+                return Response(
+                    {"error": "الطالب غير موجود"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            # Get current user's bookings
+            try:
+                student = request.user.student
+                bookings = Booking.objects.filter(student=student)
+                serializer = BookingSerializer(bookings, many=True)
+                return Response(serializer.data)
+            except Student.DoesNotExist:
+                return Response(
+                    {"error": "لا يوجد طالب مرتبط بحسابك"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
     
     elif request.method == 'POST':
         serializer = BookingSerializer(

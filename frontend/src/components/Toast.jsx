@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+App import { useState, useEffect, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 
 // Toast Context
@@ -74,6 +74,11 @@ const Toast = ({ toast, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  // Early return if toast is invalid
+  if (!toast) {
+    return null;
+  }
+
   useEffect(() => {
     // Trigger entrance animation
     const timer = setTimeout(() => setIsVisible(true), 10);
@@ -86,6 +91,9 @@ const Toast = ({ toast, onRemove }) => {
   };
 
   const getToastIcon = () => {
+    if (!toast || !toast.type) {
+      return 'ℹ️';
+    }
     switch (toast.type) {
       case 'success': return '✅';
       case 'error': return '❌';
@@ -96,6 +104,9 @@ const Toast = ({ toast, onRemove }) => {
   };
 
   const getToastColor = () => {
+    if (!toast || !toast.type) {
+      return 'var(--primary-600)';
+    }
     switch (toast.type) {
       case 'success': return 'var(--success-600)';
       case 'error': return 'var(--danger-600)';
@@ -106,6 +117,9 @@ const Toast = ({ toast, onRemove }) => {
   };
 
   const getToastBackground = () => {
+    if (!toast || !toast.type) {
+      return 'linear-gradient(135deg, var(--primary-50), var(--primary-100))';
+    }
     switch (toast.type) {
       case 'success': return 'linear-gradient(135deg, var(--success-50), var(--success-100))';
       case 'error': return 'linear-gradient(135deg, var(--danger-50), var(--danger-100))';
@@ -129,10 +143,10 @@ const Toast = ({ toast, onRemove }) => {
         </div>
 
         <div className="toast-body">
-          {toast.title && (
+          {toast && toast.title && (
             <div className="toast-title">{toast.title}</div>
           )}
-          {toast.message && (
+          {toast && toast.message && (
             <div className="toast-message">{toast.message}</div>
           )}
         </div>
@@ -146,7 +160,7 @@ const Toast = ({ toast, onRemove }) => {
         </button>
       </div>
 
-      {!toast.persistent && toast.duration > 0 && (
+      {toast && !toast.persistent && toast.duration > 0 && (
         <div
           className="toast-progress"
           style={{

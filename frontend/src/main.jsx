@@ -7,6 +7,10 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Groups from "./pages/Groups";
+import GroupDetails from "./pages/GroupDetails";
+import StudentRegistration from "./pages/StudentRegistration";
+import StudentProfile from "./pages/StudentProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
 
@@ -19,6 +23,10 @@ createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/groups" element={<Groups />} />
+        <Route path="/groups/:id" element={<GroupDetails />} />
+        <Route path="/student-registration" element={<StudentRegistration />} />
+        <Route path="/students/:id" element={<StudentProfile />} />
         <Route
           path="/profile"
           element={

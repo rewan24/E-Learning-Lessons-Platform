@@ -1042,3 +1042,12 @@ p {
         transform: translateY(0);
     }
 }
+
+/* Utility classes */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

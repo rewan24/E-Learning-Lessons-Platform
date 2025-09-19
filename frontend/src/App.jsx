@@ -1,9 +1,35 @@
 import Navbar from "./components/Navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "./services/api";
 import "./App.css";
 
 function App() {
   const [showGradesModal, setShowGradesModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is logged in initially
+    const token = localStorage.getItem("access");
+    setIsLoggedIn(!!token);
+
+    // Listen for storage changes to update login status
+    const handleStorageChange = () => {
+      const newToken = localStorage.getItem("access");
+      setIsLoggedIn(!!newToken);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events when login state changes within the same tab
+    window.addEventListener('loginStateChanged', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('loginStateChanged', handleStorageChange);
+    };
+  }, []);
 
   const handleShowModal = () => {
     setShowGradesModal(true);
@@ -11,6 +37,41 @@ function App() {
 
   const handleCloseModal = () => {
     setShowGradesModal(false);
+  };
+
+  const handleProfileClick = async (e) => {
+    e.preventDefault();
+    try {
+      // Check if user is authenticated
+      const token = localStorage.getItem("access");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      // Get current user data
+      const userResponse = await api.get('users/me/');
+      const userData = userResponse.data;
+      
+      // Check if user has a student record
+      const studentsResponse = await api.get('students/');
+      const studentsData = studentsResponse.data;
+      
+      // Find student record for current user
+      const userStudent = studentsData.results?.find(student => student.user === userData.id) ||
+                         studentsData.find?.(student => student.user === userData.id);
+      
+      if (userStudent) {
+        navigate(`/students/${userStudent.id}`);
+      } else {
+        // If no student record, go to student registration
+        navigate('/student-registration');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Fallback to login if error
+      navigate('/login');
+    }
   };
 
   return (
@@ -29,12 +90,12 @@ function App() {
               </p>
               <h3 className="text-white mb-4">أ/ إيناس إبراهيم كناني</h3>
               <div className="d-flex justify-content-center animate-fade-in">
-                <button
+                <a
+                  href="/groups"
                   className="btn btn-primary btn-hero"
-                  onClick={handleShowModal}
                 >
                   عرض المجموعات
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -90,24 +151,26 @@ function App() {
         </div>
       </section>
 
-      {/* Enhanced Call to Action Section */}
-      <section className="cta-section text-center">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <h2 className="fw-bold mb-4">مستعد لبدء رحلتك معنا؟</h2>
-              <div className="d-flex flex-column flex-md-row justify-content-center gap-4">
-                <a href="/register" className="btn btn-primary btn-hero">
-                  سجل الآن مجاناً
-                </a>
-                <a href="/login" className="btn btn-outline-primary btn-hero">
-                  دخول للحساب الحالي
-                </a>
+      {/* Enhanced Call to Action Section - Only show if not logged in */}
+      {!isLoggedIn && (
+        <section className="cta-section text-center">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-lg-8">
+                <h2 className="fw-bold mb-4">مستعد لبدء رحلتك معنا؟</h2>
+                <div className="d-flex flex-column flex-md-row justify-content-center gap-4">
+                  <a href="/student-registration" className="btn btn-primary btn-hero">
+                    سجل كطالب جديد
+                  </a>
+                  <a href="/login" className="btn btn-outline-primary btn-hero">
+                    دخول للحساب الحالي
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Enhanced Footer */}
       <footer className="footer-enhanced text-white">
@@ -121,9 +184,10 @@ function App() {
 
               <div className="footer-links">
                 <a href="/">الرئيسية</a>
-                <a href="/register">تسجيل</a>
+                <a href="/groups">المجموعات</a>
+                <a href="/student-registration">تسجيل طالب</a>
                 <a href="/login">دخول</a>
-                <a href="/profile">الملف الشخصي</a>
+                <a href="#" onClick={handleProfileClick}>الملف الشخصي</a>
               </div>
 
               <div className="footer-contact">

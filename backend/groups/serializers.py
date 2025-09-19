@@ -6,7 +6,7 @@ from students.models import Student
 class StudentMiniSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ["full_name", "phone"]  # هتظهر اسم الطالب ورقم الموبايل
+        fields = ["id", "full_name", "phone"]  # هتظهر ID واسم الطالب ورقم الموبايل
 
 class GroupSerializer(serializers.ModelSerializer):
     seats_left = serializers.SerializerMethodField()

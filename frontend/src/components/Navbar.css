@@ -156,12 +156,12 @@
 .nav-btn:hover {
     background: rgba(255, 107, 107, 0.1);
     transform: translateY(-2px);
-    color: #ff6b6b;
+    color: #573ac2;
 }
 
 .nav-link.active {
     background: rgba(255, 107, 107, 0.15);
-    color: #ff6b6b;
+    color: #573ac2;
     font-weight: 600;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.1);
 }
@@ -349,7 +349,7 @@
 .mobile-nav-link:hover,
 .mobile-nav-btn:hover {
     background: rgba(255, 107, 107, 0.1);
-    color: #ff6b6b;
+    color: #573ac2;
     transform: translateX(5px);
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.1);
 }

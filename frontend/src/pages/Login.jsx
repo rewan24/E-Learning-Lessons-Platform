@@ -37,7 +37,10 @@ function Login() {
       const userResponse = await api.get("users/me/");
       localStorage.setItem("user", JSON.stringify(userResponse.data));
 
-      navigate("/profile");
+      // Dispatch custom event to notify App component about login state change
+      window.dispatchEvent(new Event('loginStateChanged'));
+
+      navigate("/");
     } catch (err) {
       setError(
         err.response?.data?.detail ||

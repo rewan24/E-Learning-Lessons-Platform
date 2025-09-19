@@ -49,7 +49,10 @@ function Register() {
       // Set authorization header for future requests
       api.defaults.headers.common["Authorization"] = `Bearer ${data.access}`;
 
-      navigate("/profile");
+      // Dispatch custom event to notify App component about login state change
+      window.dispatchEvent(new Event('loginStateChanged'));
+
+      navigate("/");
     } catch (err) {
       const errorMessage =
         err.response?.data?.username?.[0] ||
