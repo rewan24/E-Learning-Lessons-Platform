@@ -92,100 +92,53 @@ function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="navbar-nav desktop-nav">
-          <Link
-            className={`nav-btn home-btn ${location.pathname === "/" ? "active" : ""}`}
-            to="/"
-          >
-            <span className="nav-icon"></span>
-            <span className="nav-text">الرئيسية</span>
-          </Link>
-
-          <Link
-            className={`nav-btn ${location.pathname.startsWith("/groups") ? "active" : ""}`}
-            to="/groups"
-          >
-            <span className="nav-icon"></span>
-            <span className="nav-text">المجموعات</span>
-          </Link>
-
-          <Link
-            className={`nav-btn ${location.pathname === "/student-registration" ? "active" : ""}`}
-            to="/student-registration"
-          >
-            <span className="nav-icon"></span>
-            <span className="nav-text">تسجيل طالب</span>
-          </Link>
-
-          {isAuthenticated ? (
-            <>
-              <button 
-                className="nav-btn user-avatar-btn"
-                onClick={handleProfileClick}
-                style={{
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "45px",
-                  height: "45px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = "scale(1.1)";
-                  e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = "scale(1)";
-                  e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
-                }}
-                title="الملف الشخصي"
-              >
-                {getUserInitial()}
-              </button>
-              <button className="nav-btn logout-btn" onClick={handleLogout}>
-                <span className="nav-icon"></span>
-                <span className="nav-text">تسجيل خروج</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                className={`nav-btn register-btn ${location.pathname === "/register" ? "active" : ""}`}
-                to="/register"
-              >
-                <span className="nav-icon"></span>
-                <span className="nav-text">تسجيل</span>
-              </Link>
-              <Link
-                className={`nav-btn login-btn ${location.pathname === "/login" ? "active" : ""}`}
-                to="/login"
-              >
-                <span className="nav-icon"></span>
-                <span className="nav-text">دخول</span>
-              </Link>
-            </>
+        {/* User Actions & Menu */}
+        <div className="navbar-right-section">
+          {isAuthenticated && (
+            <button 
+              className="nav-btn user-avatar-btn"
+              onClick={handleProfileClick}
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                border: "none",
+                borderRadius: "50%",
+                width: "45px",
+                height: "45px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "18px",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.1)";
+                e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+              }}
+              title="الملف الشخصي"
+            >
+              {getUserInitial()}
+            </button>
           )}
-        </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className={`mobile-menu-btn ${isMenuOpen ? "active" : ""}`}
-          onClick={toggleMenu}
-          aria-label="Toggle navigation"
-        >
-          <span className="hamburger-line"></span>
-          <span className="hamburger-line"></span>
-          <span className="hamburger-line"></span>
-        </button>
+          {/* Mobile Menu Button */}
+          <button
+            className={`mobile-menu-btn ${isMenuOpen ? "active" : ""}`}
+            onClick={toggleMenu}
+            aria-label="Toggle navigation"
+          >
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}

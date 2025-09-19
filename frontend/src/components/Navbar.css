@@ -106,9 +106,16 @@
 
 /* Desktop Navigation */
 .desktop-nav {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Navbar Right Section */
+.navbar-right-section {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
 }
 
 .nav-link,
@@ -249,7 +256,7 @@
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -397,14 +404,6 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .desktop-nav {
-        display: none;
-    }
-
-    .mobile-menu-btn {
-        display: flex;
-    }
-
     .navbar-container {
         padding: 1rem 1.5rem;
     }
