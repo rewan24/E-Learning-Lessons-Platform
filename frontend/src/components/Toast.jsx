@@ -1,4 +1,4 @@
-App import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 
 // Toast Context
