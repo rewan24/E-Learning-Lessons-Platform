@@ -1,6 +1,26 @@
 from rest_framework import serializers
 from .models import Booking
 from students.models import Student
+from groups.models import Group
+
+class StudentDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["id", "full_name", "email", "phone", "stage"]
+
+class GroupDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ["id", "name", "stage", "schedule", "days"]
+
+class BookingDetailSerializer(serializers.ModelSerializer):
+    student_details = StudentDetailsSerializer(source='student', read_only=True)
+    group_details = GroupDetailsSerializer(source='group', read_only=True)
+    
+    class Meta:
+        model = Booking
+        fields = ["id", "student", "group", "student_details", "group_details", "created_at"]
+        read_only_fields = ["id", "created_at"]
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:

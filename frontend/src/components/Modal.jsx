@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 
 // Modal Component
 const Modal = ({
+  show = false,
   isOpen = false,
   onClose,
   title,
@@ -23,7 +24,8 @@ const Modal = ({
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    const modalOpen = show || isOpen;
+    if (modalOpen) {
       setIsVisible(true);
       document.body.style.overflow = 'hidden';
     } else {
@@ -34,20 +36,20 @@ const Modal = ({
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [show, isOpen]);
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && closeOnEscape && isOpen) {
+      if (e.key === 'Escape' && closeOnEscape && (show || isOpen)) {
         handleClose();
       }
     };
 
-    if (isOpen) {
+    if (show || isOpen) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [isOpen, closeOnEscape]);
+  }, [show, isOpen, closeOnEscape]);
 
   const handleClose = () => {
     if (onClose) {
@@ -75,46 +77,68 @@ const Modal = ({
     }
   };
 
-  if (!isOpen && !isVisible) return null;
+  if (!(show || isOpen) && !isVisible) return null;
 
   const modalContent = (
     <div
-      className={`modal-backdrop ${isVisible && !isClosing ? 'modal-backdrop-enter' : ''} ${isClosing ? 'modal-backdrop-exit' : ''} ${backdropClassName}`}
+      className={`modal fade ${isVisible && !isClosing ? 'show' : ''} ${backdropClassName}`}
+      style={{ 
+        display: 'block', 
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(3px)'
+      }}
       onClick={handleBackdropClick}
+      tabIndex="-1"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? 'modal-title' : undefined}
     >
       <div
-        className={`modal-dialog ${getSizeClass()} ${isVisible && !isClosing ? 'modal-dialog-enter' : ''} ${isClosing ? 'modal-dialog-exit' : ''} ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
+        className={`modal-dialog ${getSizeClass()} modal-dialog-centered ${className}`}
+        style={{
+          transform: isVisible && !isClosing ? 'scale(1)' : 'scale(0.9)',
+          transition: 'all 0.3s ease'
+        }}
       >
-        <div className={`modal-content ${contentClassName}`}>
+        <div className={`modal-content border-0 shadow-lg ${contentClassName}`} style={{
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}>
           {(title || showCloseButton) && (
-            <div className={`modal-header ${headerClassName}`}>
+            <div className={`modal-header border-0 ${headerClassName}`} style={{
+              background: 'linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%)',
+              color: 'white',
+              padding: '20px 25px'
+            }}>
               {title && (
-                <h4 className="modal-title" id="modal-title">
+                <h5 className="modal-title fw-bold mb-0" id="modal-title" style={{ color: 'white' }}>
                   {title}
-                </h4>
+                </h5>
               )}
               {showCloseButton && (
                 <button
                   type="button"
-                  className="modal-close"
+                  className="btn-close btn-close-white"
                   onClick={handleClose}
                   aria-label="إغلاق"
-                >
-                  <span aria-hidden="true">×</span>
-                </button>
+                  style={{
+                    filter: 'invert(1)',
+                    opacity: 0.8
+                  }}
+                ></button>
               )}
             </div>
           )}
 
-          <div className={`modal-body ${bodyClassName}`}>
+          <div className={`modal-body ${bodyClassName}`} style={{ padding: '25px' }}>
             {children}
           </div>
 
           {footer && (
-            <div className={`modal-footer ${footerClassName}`}>
+            <div className={`modal-footer border-0 ${footerClassName}`} style={{
+              background: 'var(--gray-50)',
+              padding: '20px 25px'
+            }}>
               {footer}
             </div>
           )}

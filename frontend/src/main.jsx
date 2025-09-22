@@ -11,6 +11,13 @@ import Groups from "./pages/Groups";
 import GroupDetails from "./pages/GroupDetails";
 import StudentRegistration from "./pages/StudentRegistration";
 import StudentProfile from "./pages/StudentProfile";
+import AdminMainLayout from "./pages/AdminMainLayout";
+import AdminDashboardMain from "./pages/AdminDashboardMain";
+import AdminGroups from "./pages/AdminGroups";
+import AdminStudents from "./pages/AdminStudents";
+import AdminBookings from "./pages/AdminBookings";
+import AdminSettings from "./pages/AdminSettings";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
 
@@ -27,6 +34,17 @@ createRoot(document.getElementById("root")).render(
         <Route path="/groups/:id" element={<GroupDetails />} />
         <Route path="/student-registration" element={<StudentRegistration />} />
         <Route path="/students/:id" element={<StudentProfile />} />
+
+              {/* New Admin Dashboard */}
+              <Route path="/admin" element={<AdminMainLayout />}>
+                <Route index element={<AdminDashboardMain />} />
+                <Route path="dashboard" element={<AdminDashboardMain />} />
+                <Route path="groups" element={<AdminGroups />} />
+                <Route path="students" element={<AdminStudents />} />
+                <Route path="bookings" element={<AdminBookings />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+        
         <Route
           path="/profile"
           element={

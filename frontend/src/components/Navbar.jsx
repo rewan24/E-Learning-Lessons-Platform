@@ -7,6 +7,7 @@ function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,6 +25,23 @@ function Navbar() {
     if (userData) {
       setUser(JSON.parse(userData));
     }
+    
+    // Check if user is admin
+    const checkAdminStatus = async () => {
+      try {
+        const token = localStorage.getItem("access");
+        if (token) {
+          const response = await api.get('users/me/');
+          const currentUser = response.data;
+          setIsAdmin(currentUser.is_staff || currentUser.is_superuser);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+    
+    checkAdminStatus();
   }, []);
 
   const handleProfileClick = async () => {
@@ -170,6 +188,17 @@ function Navbar() {
             <span className="nav-icon"></span>
             <span className="nav-text">تسجيل طالب</span>
           </Link>
+
+          {isAuthenticated && isAdmin && (
+            <Link
+              className={`mobile-nav-btn ${location.pathname === "/admin" ? "active" : ""}`}
+              to="/admin"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span className="nav-icon"></span>
+              <span className="nav-text">لوحة التحكم</span>
+            </Link>
+          )}
 
           {isAuthenticated ? (
             <>

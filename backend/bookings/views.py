@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Booking
-from .serializers import BookingSerializer
+from .serializers import BookingSerializer, BookingDetailSerializer
 from groups.models import Group
 from students.models import Student
 
@@ -161,4 +161,20 @@ def list_bookings(request):
         return Response(
             {"error": "لا يوجد طالب مرتبط بحسابك"}, 
             status=status.HTTP_400_BAD_REQUEST
+        )
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_bookings_list(request):
+    """
+    Admin endpoint to get all bookings with student and group details
+    """
+    try:
+        bookings = Booking.objects.all().select_related('student', 'group')
+        serializer = BookingDetailSerializer(bookings, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response(
+            {"error": str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )

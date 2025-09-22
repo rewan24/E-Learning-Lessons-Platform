@@ -5,10 +5,13 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "phone", "password"]
+        fields = ["id", "username", "email", "phone", "password", "is_staff", "is_superuser", "is_active"]
         extra_kwargs = {
             'password': {'write_only': True},
-            'email': {'required': True},    
+            'email': {'required': True},
+            'is_staff': {'read_only': True},
+            'is_superuser': {'read_only': True},
+            'is_active': {'read_only': True},
         }
 
     def create(self, validated_data):
