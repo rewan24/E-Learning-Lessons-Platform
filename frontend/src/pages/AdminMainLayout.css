@@ -234,7 +234,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
   margin-bottom: 25px;
   border: none;
-  transition: all 0.3s ease;
+ /* transition: all 0.3s ease; */
 }
 
 .admin-card:hover {
